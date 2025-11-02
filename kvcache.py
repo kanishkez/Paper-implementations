@@ -10,7 +10,7 @@ out_proj = nn.Linear(512, 512)
 
 tokens = torch.randn(1, 5, 512)
 
-past_k, past_v = None, None
+cached_k, cached_v = None, None
 
 for t in range(tokens.size(1)):
     x = tokens[:, t:t+1, :]
@@ -27,16 +27,16 @@ for t in range(tokens.size(1)):
     k = k.view(B, 1, num_heads, head_dim).transpose(1, 2)   
     v = v.view(B, 1, num_heads, head_dim).transpose(1, 2)   
 
-    if past_k is None:
-        past_k = k
-        past_v = v
+    if cached_k is None:
+        cached_k = k
+        cached_v = v
     else:
-        past_k = torch.cat([past_k, k], dim=2)   
-        past_v = torch.cat([past_v, v], dim=2)
+        cached_k = torch.cat([cached_k, k], dim=2)   
+        cached_v = torch.cat([cached_v, v], dim=2)
 
-    attn_scores = torch.matmul(q, past_k.transpose(-2, -1)) / (head_dim ** 0.5) 
+    attn_scores = torch.matmul(q, cached_k.transpose(-2, -1)) / (head_dim ** 0.5) 
     attn_probs = F.softmax(attn_scores, dim=-1)
-    out = torch.matmul(attn_probs, past_v)   
+    out = torch.matmul(attn_probs, cached_v)   
 
     out = out.transpose(1, 2).contiguous().view(B, 1, D)  
     output = out_proj(out)
