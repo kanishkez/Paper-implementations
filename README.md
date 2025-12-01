@@ -6,5 +6,6 @@ So far done with:
 2. KV Caching
 3. Flash Attention ( just a rough algorithm no cuda code )
 5. Rotary Positional Embeddings
+6. Minimal GPT implementation ( just an implementation without training or inference) 
 
 Also check out my blog where I sometimes explain these concepts: https://kanishkez.github.io/#blogs
